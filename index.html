@@ -1,0 +1,3265 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fast End-to-End Trainable Guided Filter</title>
+
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script>
+  function enlarge(name, url){
+      document.getElementById('enlarge_im').src = url
+      document.getElementById('enlarge_href').href = name
+  }
+  </script>
+
+</head>
+
+<body onload="page_loaded()">
+
+<div id="header">
+  <a href="http://cripac.ia.ac.cn/en/EN/volumn/home.shtml">
+    <img src="images/CRIPAC.png" style="height:50px; float: left; margin-left: 20px;">
+  </a>
+  <a href="http://labs.ebay.com/">
+    <img src="images/ebay.png" style="height:50px; float: right; margin-right: 20px;">
+  </a>
+  <h1>Fast End-to-End Trainable Guided Filter</h1>
+  <h4>Huikai Wu, Shuai Zheng, Junge Zhang, Kaiqi Huang</h4>
+  <div style="clear:both;"></div>
+</div>
+
+<div class="sechighlight">
+<div class="container sec">
+  <h2>Abstract</h2>
+  Image processing and pixel-wise dense prediction have been advanced by harnessing the capabilities of deep learning. One central issue of deep learning is the limited capacity to handle joint upsampling. We present a deep learning building block for joint upsampling, namely guided filtering layer. This layer aims at efficiently generating the high-resolution output given the corresponding low-resolution one and a high-resolution guidance map. The proposed layer is composed of a guided filter, which is reformulated as a fully differentiable block. To this end, we show that a guided filter can be expressed as a group of spatial varying linear transformation matrices. This layer could be integrated with the convolutional neural networks (CNNs) and jointly optimized through end-to-end training. To further take advantage of end-to-end training, we plug in a trainable transformation function that generates task-specific guidance maps. By integrating the CNNs and the proposed layer, we form deep guided filtering networks. The proposed networks are evaluated on five advanced image processing tasks. Experiments on MIT-Adobe FiveK Dataset demonstrate that the proposed approach runs <b>10-100</b> times faster and achieves the state-of-the-art performance. We also show that the proposed guided filtering layer helps to improve the performance of multiple pixel-wise dense prediction tasks.
+  <div id="coursedesc">
+  </div>
+</div>
+</div>
+
+<div class="container sec">
+
+<div class='row'>
+  <img src='images/paper.jpg' class='img-responsive center-block'>
+</div>
+<div class='row text-center' style='color:#900'>
+  Accepted by CVPR 2018
+</div>
+
+</div>
+
+<div class="sechighlight">
+<div class="container sec" style="font-size:18px">
+  <div class="row">
+
+    <div class="col-md-5">
+      <h2>Code and Extras</h2>
+      You can find the code <a href="https://github.com/wuhuikai/DeepGuidedFilter">on Github</a>,
+      including:
+      <ul>
+        <li>Training/Test source code (PyTorch)</li>
+        <li>Pretrained models and datasets</li>
+        <li>Step-by-step tutorial to run our algorithm</li>
+      </ul>
+    </div>
+    <div class="col-md-7">
+      <h2>Bibtex</h2>
+      <pre style="font-size:12px;">
+@inproceedings{wu2017fast,
+  title     = {Fast End-to-End Trainable Guided Filter},
+  author    = {Wu, Huikai and Zheng, Shuai and Zhang, Junge and Huang, Kaiqi},
+  booktitle = {CVPR},
+  year = {2018}
+}</pre>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!--######################## AUTO #################################-->
+<div class="tabs">
+    <!-- Radio button and lable for #tab-content1 -->
+    <input type="radio" name="tabs" id="tab1" checked >
+    <label for="tab1">
+        <i class="fa fa-html5"></i><span>Image Retoucing</span>
+    </label>
+    <!-- Radio button and lable for #tab-content2 -->
+    <input type="radio" name="tabs" id="tab2">
+    <label for="tab2">
+      <i class="fa fa-css3"></i><span>L<sub>0</sub> Smoothing</span>
+    </label>
+    <!-- Radio button and lable for #tab-content3 -->
+    <input type="radio" name="tabs" id="tab3">
+    <label for="tab3">
+        <i class="fa fa-code"></i><span>Style Transfer</span>
+    </label>
+    <input type="radio" name="tabs" id="tab4">
+    <label for="tab4">
+        <i class="fa fa-code"></i><span>Nonlocal Dehazing</span>
+    </label>
+    <input type="radio" name="tabs" id="tab5">
+    <label for="tab5">
+        <i class="fa fa-code"></i><span>Detail Manipulation</span>
+    </label>
+    <input type="radio" name="tabs" id="tab6">
+    <label for="tab6">
+        <i class="fa fa-code"></i><span>Mono Depth Estimation</span>
+    </label>
+    <input type="radio" name="tabs" id="tab7">
+    <label for="tab7">
+        <i class="fa fa-code"></i><span>Semantic Segmentation</span>
+    </label>
+    <input type="radio" name="tabs" id="tab8">
+    <label for="tab8">
+        <i class="fa fa-code"></i><span>Saliency Detection</span>
+    </label>
+    <div id="tab-content1" class="tab-content">
+        <div class="container sec">
+
+  <h1>Visual Results --- Image Retouching (Click to Enlarge)</h1>
+  <div class='row'>
+    <div class="col-md-3 nopadding">
+      <h3>Input</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>GroundTruth</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>Ours</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>CAN</h3>
+    </div>
+  </div>
+
+<div class='row' id=a0543-_DGW6252>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0543-_DGW6252', 'images/auto_ps/supplementary_large/in_a0543-_DGW6252.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a0543-_DGW6252.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0543-_DGW6252', 'images/auto_ps/supplementary_large/gt_a0543-_DGW6252.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a0543-_DGW6252.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0543-_DGW6252', 'images/auto_ps/supplementary_large/ours_a0543-_DGW6252.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a0543-_DGW6252.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0543-_DGW6252', 'images/auto_ps/supplementary_large/can_a0543-_DGW6252.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a0543-_DGW6252.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2142-KE_-1677>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2142-KE_-1677', 'images/auto_ps/supplementary_large/in_a2142-KE_-1677.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a2142-KE_-1677.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2142-KE_-1677', 'images/auto_ps/supplementary_large/gt_a2142-KE_-1677.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a2142-KE_-1677.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2142-KE_-1677', 'images/auto_ps/supplementary_large/ours_a2142-KE_-1677.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a2142-KE_-1677.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2142-KE_-1677', 'images/auto_ps/supplementary_large/can_a2142-KE_-1677.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a2142-KE_-1677.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1482-IMG_1796>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1482-IMG_1796', 'images/auto_ps/supplementary_large/in_a1482-IMG_1796.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a1482-IMG_1796.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1482-IMG_1796', 'images/auto_ps/supplementary_large/gt_a1482-IMG_1796.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a1482-IMG_1796.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1482-IMG_1796', 'images/auto_ps/supplementary_large/ours_a1482-IMG_1796.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a1482-IMG_1796.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1482-IMG_1796', 'images/auto_ps/supplementary_large/can_a1482-IMG_1796.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a1482-IMG_1796.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0209-_DGW6273>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0209-_DGW6273', 'images/auto_ps/supplementary_large/in_a0209-_DGW6273.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a0209-_DGW6273.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0209-_DGW6273', 'images/auto_ps/supplementary_large/gt_a0209-_DGW6273.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a0209-_DGW6273.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0209-_DGW6273', 'images/auto_ps/supplementary_large/ours_a0209-_DGW6273.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a0209-_DGW6273.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0209-_DGW6273', 'images/auto_ps/supplementary_large/can_a0209-_DGW6273.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a0209-_DGW6273.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1339-IMG_3445>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1339-IMG_3445', 'images/auto_ps/supplementary_large/in_a1339-IMG_3445.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a1339-IMG_3445.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1339-IMG_3445', 'images/auto_ps/supplementary_large/gt_a1339-IMG_3445.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a1339-IMG_3445.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1339-IMG_3445', 'images/auto_ps/supplementary_large/ours_a1339-IMG_3445.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a1339-IMG_3445.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1339-IMG_3445', 'images/auto_ps/supplementary_large/can_a1339-IMG_3445.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a1339-IMG_3445.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1007-DSC_0047-1>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1007-DSC_0047-1', 'images/auto_ps/supplementary_large/in_a1007-DSC_0047-1.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a1007-DSC_0047-1.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1007-DSC_0047-1', 'images/auto_ps/supplementary_large/gt_a1007-DSC_0047-1.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a1007-DSC_0047-1.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1007-DSC_0047-1', 'images/auto_ps/supplementary_large/ours_a1007-DSC_0047-1.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a1007-DSC_0047-1.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1007-DSC_0047-1', 'images/auto_ps/supplementary_large/can_a1007-DSC_0047-1.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a1007-DSC_0047-1.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2277-07-11-24-at-15h53m42s-_MG_6720>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2277-07-11-24-at-15h53m42s-_MG_6720', 'images/auto_ps/supplementary_large/in_a2277-07-11-24-at-15h53m42s-_MG_6720.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a2277-07-11-24-at-15h53m42s-_MG_6720.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2277-07-11-24-at-15h53m42s-_MG_6720', 'images/auto_ps/supplementary_large/gt_a2277-07-11-24-at-15h53m42s-_MG_6720.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a2277-07-11-24-at-15h53m42s-_MG_6720.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2277-07-11-24-at-15h53m42s-_MG_6720', 'images/auto_ps/supplementary_large/ours_a2277-07-11-24-at-15h53m42s-_MG_6720.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a2277-07-11-24-at-15h53m42s-_MG_6720.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2277-07-11-24-at-15h53m42s-_MG_6720', 'images/auto_ps/supplementary_large/can_a2277-07-11-24-at-15h53m42s-_MG_6720.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a2277-07-11-24-at-15h53m42s-_MG_6720.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0500-IMG_4769>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0500-IMG_4769', 'images/auto_ps/supplementary_large/in_a0500-IMG_4769.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a0500-IMG_4769.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0500-IMG_4769', 'images/auto_ps/supplementary_large/gt_a0500-IMG_4769.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a0500-IMG_4769.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0500-IMG_4769', 'images/auto_ps/supplementary_large/ours_a0500-IMG_4769.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a0500-IMG_4769.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0500-IMG_4769', 'images/auto_ps/supplementary_large/can_a0500-IMG_4769.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a0500-IMG_4769.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4576-DSC_0217>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4576-DSC_0217', 'images/auto_ps/supplementary_large/in_a4576-DSC_0217.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a4576-DSC_0217.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4576-DSC_0217', 'images/auto_ps/supplementary_large/gt_a4576-DSC_0217.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a4576-DSC_0217.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4576-DSC_0217', 'images/auto_ps/supplementary_large/ours_a4576-DSC_0217.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a4576-DSC_0217.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4576-DSC_0217', 'images/auto_ps/supplementary_large/can_a4576-DSC_0217.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a4576-DSC_0217.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4178-IMG_0487>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4178-IMG_0487', 'images/auto_ps/supplementary_large/in_a4178-IMG_0487.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a4178-IMG_0487.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4178-IMG_0487', 'images/auto_ps/supplementary_large/gt_a4178-IMG_0487.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a4178-IMG_0487.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4178-IMG_0487', 'images/auto_ps/supplementary_large/ours_a4178-IMG_0487.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a4178-IMG_0487.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4178-IMG_0487', 'images/auto_ps/supplementary_large/can_a4178-IMG_0487.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a4178-IMG_0487.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2784-IMG_4960>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2784-IMG_4960', 'images/auto_ps/supplementary_large/in_a2784-IMG_4960.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a2784-IMG_4960.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2784-IMG_4960', 'images/auto_ps/supplementary_large/gt_a2784-IMG_4960.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a2784-IMG_4960.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2784-IMG_4960', 'images/auto_ps/supplementary_large/ours_a2784-IMG_4960.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a2784-IMG_4960.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2784-IMG_4960', 'images/auto_ps/supplementary_large/can_a2784-IMG_4960.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a2784-IMG_4960.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4227-Duggan_090504_8946>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4227-Duggan_090504_8946', 'images/auto_ps/supplementary_large/in_a4227-Duggan_090504_8946.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a4227-Duggan_090504_8946.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4227-Duggan_090504_8946', 'images/auto_ps/supplementary_large/gt_a4227-Duggan_090504_8946.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a4227-Duggan_090504_8946.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4227-Duggan_090504_8946', 'images/auto_ps/supplementary_large/ours_a4227-Duggan_090504_8946.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a4227-Duggan_090504_8946.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4227-Duggan_090504_8946', 'images/auto_ps/supplementary_large/can_a4227-Duggan_090504_8946.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a4227-Duggan_090504_8946.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a3609-IMG_1702>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3609-IMG_1702', 'images/auto_ps/supplementary_large/in_a3609-IMG_1702.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a3609-IMG_1702.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3609-IMG_1702', 'images/auto_ps/supplementary_large/gt_a3609-IMG_1702.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a3609-IMG_1702.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3609-IMG_1702', 'images/auto_ps/supplementary_large/ours_a3609-IMG_1702.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a3609-IMG_1702.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3609-IMG_1702', 'images/auto_ps/supplementary_large/can_a3609-IMG_1702.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a3609-IMG_1702.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a3111-_MG_2968>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3111-_MG_2968', 'images/auto_ps/supplementary_large/in_a3111-_MG_2968.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a3111-_MG_2968.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3111-_MG_2968', 'images/auto_ps/supplementary_large/gt_a3111-_MG_2968.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a3111-_MG_2968.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3111-_MG_2968', 'images/auto_ps/supplementary_large/ours_a3111-_MG_2968.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a3111-_MG_2968.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3111-_MG_2968', 'images/auto_ps/supplementary_large/can_a3111-_MG_2968.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a3111-_MG_2968.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2946-kme_142>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2946-kme_142', 'images/auto_ps/supplementary_large/in_a2946-kme_142.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/in_a2946-kme_142.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2946-kme_142', 'images/auto_ps/supplementary_large/gt_a2946-kme_142.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/gt_a2946-kme_142.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2946-kme_142', 'images/auto_ps/supplementary_large/ours_a2946-kme_142.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/ours_a2946-kme_142.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2946-kme_142', 'images/auto_ps/supplementary_large/can_a2946-kme_142.jpg')" href="#enlarge">
+       <img src="images/auto_ps/supplementary/can_a2946-kme_142.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+</div>
+    </div> <!-- #tab-content1 -->
+    <div id="tab-content2" class="tab-content">
+        <div class="container sec">
+
+  <h1>Visual Results --- L<sub>0</sub> Smoothing (Click to Enlarge)</h1>
+  <div class='row'>
+    <div class="col-md-3 nopadding">
+      <h3>Input</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>GroundTruth</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>Ours</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>CAN</h3>
+    </div>
+  </div>
+
+<div class='row' id=a1964-DSC_0007>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1964-DSC_0007', 'images/l0_smooth/supplementary_large/in_a1964-DSC_0007.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a1964-DSC_0007.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1964-DSC_0007', 'images/l0_smooth/supplementary_large/gt_a1964-DSC_0007.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a1964-DSC_0007.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1964-DSC_0007', 'images/l0_smooth/supplementary_large/ours_a1964-DSC_0007.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a1964-DSC_0007.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1964-DSC_0007', 'images/l0_smooth/supplementary_large/can_a1964-DSC_0007.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a1964-DSC_0007.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4595-Duggan_090503_8713>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4595-Duggan_090503_8713', 'images/l0_smooth/supplementary_large/in_a4595-Duggan_090503_8713.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a4595-Duggan_090503_8713.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4595-Duggan_090503_8713', 'images/l0_smooth/supplementary_large/gt_a4595-Duggan_090503_8713.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a4595-Duggan_090503_8713.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4595-Duggan_090503_8713', 'images/l0_smooth/supplementary_large/ours_a4595-Duggan_090503_8713.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a4595-Duggan_090503_8713.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4595-Duggan_090503_8713', 'images/l0_smooth/supplementary_large/can_a4595-Duggan_090503_8713.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a4595-Duggan_090503_8713.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2489-kme_408>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2489-kme_408', 'images/l0_smooth/supplementary_large/in_a2489-kme_408.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a2489-kme_408.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2489-kme_408', 'images/l0_smooth/supplementary_large/gt_a2489-kme_408.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a2489-kme_408.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2489-kme_408', 'images/l0_smooth/supplementary_large/ours_a2489-kme_408.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a2489-kme_408.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2489-kme_408', 'images/l0_smooth/supplementary_large/can_a2489-kme_408.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a2489-kme_408.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2586-JI2E3899>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2586-JI2E3899', 'images/l0_smooth/supplementary_large/in_a2586-JI2E3899.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a2586-JI2E3899.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2586-JI2E3899', 'images/l0_smooth/supplementary_large/gt_a2586-JI2E3899.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a2586-JI2E3899.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2586-JI2E3899', 'images/l0_smooth/supplementary_large/ours_a2586-JI2E3899.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a2586-JI2E3899.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2586-JI2E3899', 'images/l0_smooth/supplementary_large/can_a2586-JI2E3899.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a2586-JI2E3899.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4860-Duggan_090504_8801>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4860-Duggan_090504_8801', 'images/l0_smooth/supplementary_large/in_a4860-Duggan_090504_8801.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a4860-Duggan_090504_8801.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4860-Duggan_090504_8801', 'images/l0_smooth/supplementary_large/gt_a4860-Duggan_090504_8801.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a4860-Duggan_090504_8801.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4860-Duggan_090504_8801', 'images/l0_smooth/supplementary_large/ours_a4860-Duggan_090504_8801.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a4860-Duggan_090504_8801.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4860-Duggan_090504_8801', 'images/l0_smooth/supplementary_large/can_a4860-Duggan_090504_8801.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a4860-Duggan_090504_8801.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4482-Duggan_090503_8712>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4482-Duggan_090503_8712', 'images/l0_smooth/supplementary_large/in_a4482-Duggan_090503_8712.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a4482-Duggan_090503_8712.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4482-Duggan_090503_8712', 'images/l0_smooth/supplementary_large/gt_a4482-Duggan_090503_8712.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a4482-Duggan_090503_8712.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4482-Duggan_090503_8712', 'images/l0_smooth/supplementary_large/ours_a4482-Duggan_090503_8712.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a4482-Duggan_090503_8712.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4482-Duggan_090503_8712', 'images/l0_smooth/supplementary_large/can_a4482-Duggan_090503_8712.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a4482-Duggan_090503_8712.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0407-IMG_8270>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0407-IMG_8270', 'images/l0_smooth/supplementary_large/in_a0407-IMG_8270.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a0407-IMG_8270.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0407-IMG_8270', 'images/l0_smooth/supplementary_large/gt_a0407-IMG_8270.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a0407-IMG_8270.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0407-IMG_8270', 'images/l0_smooth/supplementary_large/ours_a0407-IMG_8270.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a0407-IMG_8270.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0407-IMG_8270', 'images/l0_smooth/supplementary_large/can_a0407-IMG_8270.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a0407-IMG_8270.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a3434-jmac_MG_5831>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3434-jmac_MG_5831', 'images/l0_smooth/supplementary_large/in_a3434-jmac_MG_5831.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a3434-jmac_MG_5831.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3434-jmac_MG_5831', 'images/l0_smooth/supplementary_large/gt_a3434-jmac_MG_5831.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a3434-jmac_MG_5831.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3434-jmac_MG_5831', 'images/l0_smooth/supplementary_large/ours_a3434-jmac_MG_5831.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a3434-jmac_MG_5831.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3434-jmac_MG_5831', 'images/l0_smooth/supplementary_large/can_a3434-jmac_MG_5831.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a3434-jmac_MG_5831.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0506-kme_313>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0506-kme_313', 'images/l0_smooth/supplementary_large/in_a0506-kme_313.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a0506-kme_313.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0506-kme_313', 'images/l0_smooth/supplementary_large/gt_a0506-kme_313.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a0506-kme_313.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0506-kme_313', 'images/l0_smooth/supplementary_large/ours_a0506-kme_313.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a0506-kme_313.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0506-kme_313', 'images/l0_smooth/supplementary_large/can_a0506-kme_313.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a0506-kme_313.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4443-Duggan_090503_8691>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4443-Duggan_090503_8691', 'images/l0_smooth/supplementary_large/in_a4443-Duggan_090503_8691.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a4443-Duggan_090503_8691.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4443-Duggan_090503_8691', 'images/l0_smooth/supplementary_large/gt_a4443-Duggan_090503_8691.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a4443-Duggan_090503_8691.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4443-Duggan_090503_8691', 'images/l0_smooth/supplementary_large/ours_a4443-Duggan_090503_8691.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a4443-Duggan_090503_8691.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4443-Duggan_090503_8691', 'images/l0_smooth/supplementary_large/can_a4443-Duggan_090503_8691.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a4443-Duggan_090503_8691.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2783-kme_061>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2783-kme_061', 'images/l0_smooth/supplementary_large/in_a2783-kme_061.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a2783-kme_061.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2783-kme_061', 'images/l0_smooth/supplementary_large/gt_a2783-kme_061.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a2783-kme_061.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2783-kme_061', 'images/l0_smooth/supplementary_large/ours_a2783-kme_061.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a2783-kme_061.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2783-kme_061', 'images/l0_smooth/supplementary_large/can_a2783-kme_061.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a2783-kme_061.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2656-LSCRW_0073>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2656-LSCRW_0073', 'images/l0_smooth/supplementary_large/in_a2656-LSCRW_0073.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a2656-LSCRW_0073.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2656-LSCRW_0073', 'images/l0_smooth/supplementary_large/gt_a2656-LSCRW_0073.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a2656-LSCRW_0073.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2656-LSCRW_0073', 'images/l0_smooth/supplementary_large/ours_a2656-LSCRW_0073.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a2656-LSCRW_0073.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2656-LSCRW_0073', 'images/l0_smooth/supplementary_large/can_a2656-LSCRW_0073.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a2656-LSCRW_0073.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4736-Duggan_090503_8761>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4736-Duggan_090503_8761', 'images/l0_smooth/supplementary_large/in_a4736-Duggan_090503_8761.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a4736-Duggan_090503_8761.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4736-Duggan_090503_8761', 'images/l0_smooth/supplementary_large/gt_a4736-Duggan_090503_8761.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a4736-Duggan_090503_8761.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4736-Duggan_090503_8761', 'images/l0_smooth/supplementary_large/ours_a4736-Duggan_090503_8761.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a4736-Duggan_090503_8761.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4736-Duggan_090503_8761', 'images/l0_smooth/supplementary_large/can_a4736-Duggan_090503_8761.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a4736-Duggan_090503_8761.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2883-_DSC0008-2>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2883-_DSC0008-2', 'images/l0_smooth/supplementary_large/in_a2883-_DSC0008-2.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a2883-_DSC0008-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2883-_DSC0008-2', 'images/l0_smooth/supplementary_large/gt_a2883-_DSC0008-2.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a2883-_DSC0008-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2883-_DSC0008-2', 'images/l0_smooth/supplementary_large/ours_a2883-_DSC0008-2.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a2883-_DSC0008-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2883-_DSC0008-2', 'images/l0_smooth/supplementary_large/can_a2883-_DSC0008-2.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a2883-_DSC0008-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1148-IMG_2361>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1148-IMG_2361', 'images/l0_smooth/supplementary_large/in_a1148-IMG_2361.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/in_a1148-IMG_2361.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1148-IMG_2361', 'images/l0_smooth/supplementary_large/gt_a1148-IMG_2361.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/gt_a1148-IMG_2361.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1148-IMG_2361', 'images/l0_smooth/supplementary_large/ours_a1148-IMG_2361.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/ours_a1148-IMG_2361.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1148-IMG_2361', 'images/l0_smooth/supplementary_large/can_a1148-IMG_2361.jpg')" href="#enlarge">
+       <img src="images/l0_smooth/supplementary/can_a1148-IMG_2361.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+</div>
+    </div> <!-- #tab-content2 -->
+    <div id="tab-content3" class="tab-content">
+        <div class="container sec">
+
+  <h1>Visual Results --- Style Transfer (Click to Enlarge)</h1>
+  <div class='row'>
+    <div class="col-md-3 nopadding">
+      <h3>Input</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>GroundTruth</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>Ours</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>CAN</h3>
+    </div>
+  </div>
+
+<div class='row' id=a1178-jmac_MG_6061>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1178-jmac_MG_6061', 'images/style_transfer/supplementary_large/in_a1178-jmac_MG_6061.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a1178-jmac_MG_6061.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1178-jmac_MG_6061', 'images/style_transfer/supplementary_large/gt_a1178-jmac_MG_6061.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a1178-jmac_MG_6061.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1178-jmac_MG_6061', 'images/style_transfer/supplementary_large/ours_a1178-jmac_MG_6061.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a1178-jmac_MG_6061.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1178-jmac_MG_6061', 'images/style_transfer/supplementary_large/can_a1178-jmac_MG_6061.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a1178-jmac_MG_6061.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1644-_DSC0013-2>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1644-_DSC0013-2', 'images/style_transfer/supplementary_large/in_a1644-_DSC0013-2.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a1644-_DSC0013-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1644-_DSC0013-2', 'images/style_transfer/supplementary_large/gt_a1644-_DSC0013-2.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a1644-_DSC0013-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1644-_DSC0013-2', 'images/style_transfer/supplementary_large/ours_a1644-_DSC0013-2.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a1644-_DSC0013-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1644-_DSC0013-2', 'images/style_transfer/supplementary_large/can_a1644-_DSC0013-2.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a1644-_DSC0013-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0188-IMG_0344>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0188-IMG_0344', 'images/style_transfer/supplementary_large/in_a0188-IMG_0344.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a0188-IMG_0344.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0188-IMG_0344', 'images/style_transfer/supplementary_large/gt_a0188-IMG_0344.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a0188-IMG_0344.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0188-IMG_0344', 'images/style_transfer/supplementary_large/ours_a0188-IMG_0344.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a0188-IMG_0344.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0188-IMG_0344', 'images/style_transfer/supplementary_large/can_a0188-IMG_0344.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a0188-IMG_0344.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2538-kme_247>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2538-kme_247', 'images/style_transfer/supplementary_large/in_a2538-kme_247.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a2538-kme_247.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2538-kme_247', 'images/style_transfer/supplementary_large/gt_a2538-kme_247.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a2538-kme_247.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2538-kme_247', 'images/style_transfer/supplementary_large/ours_a2538-kme_247.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a2538-kme_247.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2538-kme_247', 'images/style_transfer/supplementary_large/can_a2538-kme_247.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a2538-kme_247.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1786-kme_520>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1786-kme_520', 'images/style_transfer/supplementary_large/in_a1786-kme_520.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a1786-kme_520.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1786-kme_520', 'images/style_transfer/supplementary_large/gt_a1786-kme_520.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a1786-kme_520.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1786-kme_520', 'images/style_transfer/supplementary_large/ours_a1786-kme_520.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a1786-kme_520.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1786-kme_520', 'images/style_transfer/supplementary_large/can_a1786-kme_520.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a1786-kme_520.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0329-_MG_1830>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0329-_MG_1830', 'images/style_transfer/supplementary_large/in_a0329-_MG_1830.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a0329-_MG_1830.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0329-_MG_1830', 'images/style_transfer/supplementary_large/gt_a0329-_MG_1830.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a0329-_MG_1830.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0329-_MG_1830', 'images/style_transfer/supplementary_large/ours_a0329-_MG_1830.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a0329-_MG_1830.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0329-_MG_1830', 'images/style_transfer/supplementary_large/can_a0329-_MG_1830.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a0329-_MG_1830.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1761-JI2E4450>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1761-JI2E4450', 'images/style_transfer/supplementary_large/in_a1761-JI2E4450.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a1761-JI2E4450.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1761-JI2E4450', 'images/style_transfer/supplementary_large/gt_a1761-JI2E4450.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a1761-JI2E4450.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1761-JI2E4450', 'images/style_transfer/supplementary_large/ours_a1761-JI2E4450.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a1761-JI2E4450.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1761-JI2E4450', 'images/style_transfer/supplementary_large/can_a1761-JI2E4450.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a1761-JI2E4450.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4605-Duggan_090108_4208>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4605-Duggan_090108_4208', 'images/style_transfer/supplementary_large/in_a4605-Duggan_090108_4208.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a4605-Duggan_090108_4208.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4605-Duggan_090108_4208', 'images/style_transfer/supplementary_large/gt_a4605-Duggan_090108_4208.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a4605-Duggan_090108_4208.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4605-Duggan_090108_4208', 'images/style_transfer/supplementary_large/ours_a4605-Duggan_090108_4208.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a4605-Duggan_090108_4208.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4605-Duggan_090108_4208', 'images/style_transfer/supplementary_large/can_a4605-Duggan_090108_4208.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a4605-Duggan_090108_4208.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2594-WP_CRW_9569>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2594-WP_CRW_9569', 'images/style_transfer/supplementary_large/in_a2594-WP_CRW_9569.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a2594-WP_CRW_9569.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2594-WP_CRW_9569', 'images/style_transfer/supplementary_large/gt_a2594-WP_CRW_9569.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a2594-WP_CRW_9569.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2594-WP_CRW_9569', 'images/style_transfer/supplementary_large/ours_a2594-WP_CRW_9569.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a2594-WP_CRW_9569.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2594-WP_CRW_9569', 'images/style_transfer/supplementary_large/can_a2594-WP_CRW_9569.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a2594-WP_CRW_9569.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2918-_I2E7066>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2918-_I2E7066', 'images/style_transfer/supplementary_large/in_a2918-_I2E7066.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a2918-_I2E7066.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2918-_I2E7066', 'images/style_transfer/supplementary_large/gt_a2918-_I2E7066.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a2918-_I2E7066.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2918-_I2E7066', 'images/style_transfer/supplementary_large/ours_a2918-_I2E7066.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a2918-_I2E7066.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2918-_I2E7066', 'images/style_transfer/supplementary_large/can_a2918-_I2E7066.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a2918-_I2E7066.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0633-kme_450>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0633-kme_450', 'images/style_transfer/supplementary_large/in_a0633-kme_450.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a0633-kme_450.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0633-kme_450', 'images/style_transfer/supplementary_large/gt_a0633-kme_450.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a0633-kme_450.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0633-kme_450', 'images/style_transfer/supplementary_large/ours_a0633-kme_450.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a0633-kme_450.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0633-kme_450', 'images/style_transfer/supplementary_large/can_a0633-kme_450.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a0633-kme_450.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2105-jmac_MG_7930>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2105-jmac_MG_7930', 'images/style_transfer/supplementary_large/in_a2105-jmac_MG_7930.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a2105-jmac_MG_7930.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2105-jmac_MG_7930', 'images/style_transfer/supplementary_large/gt_a2105-jmac_MG_7930.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a2105-jmac_MG_7930.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2105-jmac_MG_7930', 'images/style_transfer/supplementary_large/ours_a2105-jmac_MG_7930.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a2105-jmac_MG_7930.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2105-jmac_MG_7930', 'images/style_transfer/supplementary_large/can_a2105-jmac_MG_7930.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a2105-jmac_MG_7930.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1346-20061213_142422__MG_3757>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1346-20061213_142422__MG_3757', 'images/style_transfer/supplementary_large/in_a1346-20061213_142422__MG_3757.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a1346-20061213_142422__MG_3757.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1346-20061213_142422__MG_3757', 'images/style_transfer/supplementary_large/gt_a1346-20061213_142422__MG_3757.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a1346-20061213_142422__MG_3757.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1346-20061213_142422__MG_3757', 'images/style_transfer/supplementary_large/ours_a1346-20061213_142422__MG_3757.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a1346-20061213_142422__MG_3757.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1346-20061213_142422__MG_3757', 'images/style_transfer/supplementary_large/can_a1346-20061213_142422__MG_3757.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a1346-20061213_142422__MG_3757.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1329-IMG_3540>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1329-IMG_3540', 'images/style_transfer/supplementary_large/in_a1329-IMG_3540.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a1329-IMG_3540.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1329-IMG_3540', 'images/style_transfer/supplementary_large/gt_a1329-IMG_3540.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a1329-IMG_3540.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1329-IMG_3540', 'images/style_transfer/supplementary_large/ours_a1329-IMG_3540.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a1329-IMG_3540.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1329-IMG_3540', 'images/style_transfer/supplementary_large/can_a1329-IMG_3540.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a1329-IMG_3540.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0801-07-08-11-at-16h32m03s-_MG_3277>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0801-07-08-11-at-16h32m03s-_MG_3277', 'images/style_transfer/supplementary_large/in_a0801-07-08-11-at-16h32m03s-_MG_3277.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a0801-07-08-11-at-16h32m03s-_MG_3277.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0801-07-08-11-at-16h32m03s-_MG_3277', 'images/style_transfer/supplementary_large/gt_a0801-07-08-11-at-16h32m03s-_MG_3277.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a0801-07-08-11-at-16h32m03s-_MG_3277.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0801-07-08-11-at-16h32m03s-_MG_3277', 'images/style_transfer/supplementary_large/ours_a0801-07-08-11-at-16h32m03s-_MG_3277.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a0801-07-08-11-at-16h32m03s-_MG_3277.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0801-07-08-11-at-16h32m03s-_MG_3277', 'images/style_transfer/supplementary_large/can_a0801-07-08-11-at-16h32m03s-_MG_3277.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a0801-07-08-11-at-16h32m03s-_MG_3277.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4091-_DSC0041>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4091-_DSC0041', 'images/style_transfer/supplementary_large/in_a4091-_DSC0041.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a4091-_DSC0041.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4091-_DSC0041', 'images/style_transfer/supplementary_large/gt_a4091-_DSC0041.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a4091-_DSC0041.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4091-_DSC0041', 'images/style_transfer/supplementary_large/ours_a4091-_DSC0041.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a4091-_DSC0041.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4091-_DSC0041', 'images/style_transfer/supplementary_large/can_a4091-_DSC0041.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a4091-_DSC0041.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4050-_DSC0028-2>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4050-_DSC0028-2', 'images/style_transfer/supplementary_large/in_a4050-_DSC0028-2.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/in_a4050-_DSC0028-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4050-_DSC0028-2', 'images/style_transfer/supplementary_large/gt_a4050-_DSC0028-2.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/gt_a4050-_DSC0028-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4050-_DSC0028-2', 'images/style_transfer/supplementary_large/ours_a4050-_DSC0028-2.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/ours_a4050-_DSC0028-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4050-_DSC0028-2', 'images/style_transfer/supplementary_large/can_a4050-_DSC0028-2.jpg')" href="#enlarge">
+       <img src="images/style_transfer/supplementary/can_a4050-_DSC0028-2.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+</div>
+    </div> <!-- #tab-content3 -->
+    <div id="tab-content4" class="tab-content">
+      <div class="container sec">
+
+  <h1>Visual Results --- Nonlocal Dehazing (Click to Enlarge)</h1>
+  <div class='row'>
+    <div class="col-md-3 nopadding">
+      <h3>Input</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>GroundTruth</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>Ours</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>CAN</h3>
+    </div>
+  </div>
+
+<div class='row' id=a4835-Duggan_090426_7891>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4835-Duggan_090426_7891', 'images/non_local_dehazing/supplementary_large/in_a4835-Duggan_090426_7891.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a4835-Duggan_090426_7891.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4835-Duggan_090426_7891', 'images/non_local_dehazing/supplementary_large/gt_a4835-Duggan_090426_7891.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a4835-Duggan_090426_7891.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4835-Duggan_090426_7891', 'images/non_local_dehazing/supplementary_large/ours_a4835-Duggan_090426_7891.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a4835-Duggan_090426_7891.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4835-Duggan_090426_7891', 'images/non_local_dehazing/supplementary_large/can_a4835-Duggan_090426_7891.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a4835-Duggan_090426_7891.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0776-050813_162440__I2E5677>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0776-050813_162440__I2E5677', 'images/non_local_dehazing/supplementary_large/in_a0776-050813_162440__I2E5677.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a0776-050813_162440__I2E5677.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0776-050813_162440__I2E5677', 'images/non_local_dehazing/supplementary_large/gt_a0776-050813_162440__I2E5677.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a0776-050813_162440__I2E5677.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0776-050813_162440__I2E5677', 'images/non_local_dehazing/supplementary_large/ours_a0776-050813_162440__I2E5677.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a0776-050813_162440__I2E5677.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0776-050813_162440__I2E5677', 'images/non_local_dehazing/supplementary_large/can_a0776-050813_162440__I2E5677.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a0776-050813_162440__I2E5677.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2732-20051225_162540__MG_1358>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2732-20051225_162540__MG_1358', 'images/non_local_dehazing/supplementary_large/in_a2732-20051225_162540__MG_1358.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a2732-20051225_162540__MG_1358.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2732-20051225_162540__MG_1358', 'images/non_local_dehazing/supplementary_large/gt_a2732-20051225_162540__MG_1358.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a2732-20051225_162540__MG_1358.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2732-20051225_162540__MG_1358', 'images/non_local_dehazing/supplementary_large/ours_a2732-20051225_162540__MG_1358.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a2732-20051225_162540__MG_1358.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2732-20051225_162540__MG_1358', 'images/non_local_dehazing/supplementary_large/can_a2732-20051225_162540__MG_1358.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a2732-20051225_162540__MG_1358.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2803-060810_075208_GM6A0020>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2803-060810_075208_GM6A0020', 'images/non_local_dehazing/supplementary_large/in_a2803-060810_075208_GM6A0020.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a2803-060810_075208_GM6A0020.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2803-060810_075208_GM6A0020', 'images/non_local_dehazing/supplementary_large/gt_a2803-060810_075208_GM6A0020.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a2803-060810_075208_GM6A0020.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2803-060810_075208_GM6A0020', 'images/non_local_dehazing/supplementary_large/ours_a2803-060810_075208_GM6A0020.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a2803-060810_075208_GM6A0020.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2803-060810_075208_GM6A0020', 'images/non_local_dehazing/supplementary_large/can_a2803-060810_075208_GM6A0020.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a2803-060810_075208_GM6A0020.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2103-dgw_054>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2103-dgw_054', 'images/non_local_dehazing/supplementary_large/in_a2103-dgw_054.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a2103-dgw_054.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2103-dgw_054', 'images/non_local_dehazing/supplementary_large/gt_a2103-dgw_054.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a2103-dgw_054.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2103-dgw_054', 'images/non_local_dehazing/supplementary_large/ours_a2103-dgw_054.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a2103-dgw_054.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2103-dgw_054', 'images/non_local_dehazing/supplementary_large/can_a2103-dgw_054.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a2103-dgw_054.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1992-jmac_DSC1521>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1992-jmac_DSC1521', 'images/non_local_dehazing/supplementary_large/in_a1992-jmac_DSC1521.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a1992-jmac_DSC1521.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1992-jmac_DSC1521', 'images/non_local_dehazing/supplementary_large/gt_a1992-jmac_DSC1521.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a1992-jmac_DSC1521.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1992-jmac_DSC1521', 'images/non_local_dehazing/supplementary_large/ours_a1992-jmac_DSC1521.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a1992-jmac_DSC1521.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1992-jmac_DSC1521', 'images/non_local_dehazing/supplementary_large/can_a1992-jmac_DSC1521.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a1992-jmac_DSC1521.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2427-jmac_MG_5488>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2427-jmac_MG_5488', 'images/non_local_dehazing/supplementary_large/in_a2427-jmac_MG_5488.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a2427-jmac_MG_5488.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2427-jmac_MG_5488', 'images/non_local_dehazing/supplementary_large/gt_a2427-jmac_MG_5488.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a2427-jmac_MG_5488.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2427-jmac_MG_5488', 'images/non_local_dehazing/supplementary_large/ours_a2427-jmac_MG_5488.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a2427-jmac_MG_5488.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2427-jmac_MG_5488', 'images/non_local_dehazing/supplementary_large/can_a2427-jmac_MG_5488.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a2427-jmac_MG_5488.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2093-_DSC1652>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2093-_DSC1652', 'images/non_local_dehazing/supplementary_large/in_a2093-_DSC1652.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a2093-_DSC1652.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2093-_DSC1652', 'images/non_local_dehazing/supplementary_large/gt_a2093-_DSC1652.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a2093-_DSC1652.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2093-_DSC1652', 'images/non_local_dehazing/supplementary_large/ours_a2093-_DSC1652.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a2093-_DSC1652.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2093-_DSC1652', 'images/non_local_dehazing/supplementary_large/can_a2093-_DSC1652.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a2093-_DSC1652.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a3339-_MG_7202>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3339-_MG_7202', 'images/non_local_dehazing/supplementary_large/in_a3339-_MG_7202.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a3339-_MG_7202.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3339-_MG_7202', 'images/non_local_dehazing/supplementary_large/gt_a3339-_MG_7202.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a3339-_MG_7202.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3339-_MG_7202', 'images/non_local_dehazing/supplementary_large/ours_a3339-_MG_7202.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a3339-_MG_7202.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3339-_MG_7202', 'images/non_local_dehazing/supplementary_large/can_a3339-_MG_7202.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a3339-_MG_7202.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0758-050731_160352__I2E5385>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0758-050731_160352__I2E5385', 'images/non_local_dehazing/supplementary_large/in_a0758-050731_160352__I2E5385.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a0758-050731_160352__I2E5385.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0758-050731_160352__I2E5385', 'images/non_local_dehazing/supplementary_large/gt_a0758-050731_160352__I2E5385.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a0758-050731_160352__I2E5385.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0758-050731_160352__I2E5385', 'images/non_local_dehazing/supplementary_large/ours_a0758-050731_160352__I2E5385.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a0758-050731_160352__I2E5385.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0758-050731_160352__I2E5385', 'images/non_local_dehazing/supplementary_large/can_a0758-050731_160352__I2E5385.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a0758-050731_160352__I2E5385.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1858-050815_174510__I2E6619>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1858-050815_174510__I2E6619', 'images/non_local_dehazing/supplementary_large/in_a1858-050815_174510__I2E6619.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a1858-050815_174510__I2E6619.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1858-050815_174510__I2E6619', 'images/non_local_dehazing/supplementary_large/gt_a1858-050815_174510__I2E6619.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a1858-050815_174510__I2E6619.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1858-050815_174510__I2E6619', 'images/non_local_dehazing/supplementary_large/ours_a1858-050815_174510__I2E6619.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a1858-050815_174510__I2E6619.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1858-050815_174510__I2E6619', 'images/non_local_dehazing/supplementary_large/can_a1858-050815_174510__I2E6619.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a1858-050815_174510__I2E6619.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2220-IMG_2996>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2220-IMG_2996', 'images/non_local_dehazing/supplementary_large/in_a2220-IMG_2996.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a2220-IMG_2996.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2220-IMG_2996', 'images/non_local_dehazing/supplementary_large/gt_a2220-IMG_2996.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a2220-IMG_2996.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2220-IMG_2996', 'images/non_local_dehazing/supplementary_large/ours_a2220-IMG_2996.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a2220-IMG_2996.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2220-IMG_2996', 'images/non_local_dehazing/supplementary_large/can_a2220-IMG_2996.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a2220-IMG_2996.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a3135-jn_20080802_0023>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3135-jn_20080802_0023', 'images/non_local_dehazing/supplementary_large/in_a3135-jn_20080802_0023.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a3135-jn_20080802_0023.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3135-jn_20080802_0023', 'images/non_local_dehazing/supplementary_large/gt_a3135-jn_20080802_0023.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a3135-jn_20080802_0023.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3135-jn_20080802_0023', 'images/non_local_dehazing/supplementary_large/ours_a3135-jn_20080802_0023.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a3135-jn_20080802_0023.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3135-jn_20080802_0023', 'images/non_local_dehazing/supplementary_large/can_a3135-jn_20080802_0023.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a3135-jn_20080802_0023.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2776-jmac_DSC1704>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2776-jmac_DSC1704', 'images/non_local_dehazing/supplementary_large/in_a2776-jmac_DSC1704.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a2776-jmac_DSC1704.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2776-jmac_DSC1704', 'images/non_local_dehazing/supplementary_large/gt_a2776-jmac_DSC1704.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a2776-jmac_DSC1704.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2776-jmac_DSC1704', 'images/non_local_dehazing/supplementary_large/ours_a2776-jmac_DSC1704.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a2776-jmac_DSC1704.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2776-jmac_DSC1704', 'images/non_local_dehazing/supplementary_large/can_a2776-jmac_DSC1704.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a2776-jmac_DSC1704.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4325-_DSC0005-1>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4325-_DSC0005-1', 'images/non_local_dehazing/supplementary_large/in_a4325-_DSC0005-1.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a4325-_DSC0005-1.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4325-_DSC0005-1', 'images/non_local_dehazing/supplementary_large/gt_a4325-_DSC0005-1.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a4325-_DSC0005-1.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4325-_DSC0005-1', 'images/non_local_dehazing/supplementary_large/ours_a4325-_DSC0005-1.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a4325-_DSC0005-1.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4325-_DSC0005-1', 'images/non_local_dehazing/supplementary_large/can_a4325-_DSC0005-1.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a4325-_DSC0005-1.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0088-_DGW6376>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0088-_DGW6376', 'images/non_local_dehazing/supplementary_large/in_a0088-_DGW6376.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a0088-_DGW6376.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0088-_DGW6376', 'images/non_local_dehazing/supplementary_large/gt_a0088-_DGW6376.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a0088-_DGW6376.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0088-_DGW6376', 'images/non_local_dehazing/supplementary_large/ours_a0088-_DGW6376.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a0088-_DGW6376.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0088-_DGW6376', 'images/non_local_dehazing/supplementary_large/can_a0088-_DGW6376.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a0088-_DGW6376.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4586-Duggan_090428_8010>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4586-Duggan_090428_8010', 'images/non_local_dehazing/supplementary_large/in_a4586-Duggan_090428_8010.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/in_a4586-Duggan_090428_8010.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4586-Duggan_090428_8010', 'images/non_local_dehazing/supplementary_large/gt_a4586-Duggan_090428_8010.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/gt_a4586-Duggan_090428_8010.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4586-Duggan_090428_8010', 'images/non_local_dehazing/supplementary_large/ours_a4586-Duggan_090428_8010.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/ours_a4586-Duggan_090428_8010.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4586-Duggan_090428_8010', 'images/non_local_dehazing/supplementary_large/can_a4586-Duggan_090428_8010.jpg')" href="#enlarge">
+       <img src="images/non_local_dehazing/supplementary/can_a4586-Duggan_090428_8010.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+      </div>
+    </div> <!-- #tab-content3 -->
+    <div id="tab-content5" class="tab-content">
+      <div class="container sec">
+
+  <h1>Visual Results --- Detail Manipulation (Click to Enlarge)</h1>
+  <div class='row'>
+    <div class="col-md-3 nopadding">
+      <h3>Input</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>GroundTruth</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>Ours</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>CAN</h3>
+    </div>
+  </div>
+
+<div class='row' id=a3820-dgw_025>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3820-dgw_025', 'images/detail_manipulation/supplementary_large/in_a3820-dgw_025.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a3820-dgw_025.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3820-dgw_025', 'images/detail_manipulation/supplementary_large/gt_a3820-dgw_025.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a3820-dgw_025.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3820-dgw_025', 'images/detail_manipulation/supplementary_large/ours_a3820-dgw_025.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a3820-dgw_025.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3820-dgw_025', 'images/detail_manipulation/supplementary_large/can_a3820-dgw_025.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a3820-dgw_025.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0546-dgw_153>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0546-dgw_153', 'images/detail_manipulation/supplementary_large/in_a0546-dgw_153.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a0546-dgw_153.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0546-dgw_153', 'images/detail_manipulation/supplementary_large/gt_a0546-dgw_153.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a0546-dgw_153.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0546-dgw_153', 'images/detail_manipulation/supplementary_large/ours_a0546-dgw_153.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a0546-dgw_153.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0546-dgw_153', 'images/detail_manipulation/supplementary_large/can_a0546-dgw_153.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a0546-dgw_153.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2262-_DGW6400>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2262-_DGW6400', 'images/detail_manipulation/supplementary_large/in_a2262-_DGW6400.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a2262-_DGW6400.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2262-_DGW6400', 'images/detail_manipulation/supplementary_large/gt_a2262-_DGW6400.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a2262-_DGW6400.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2262-_DGW6400', 'images/detail_manipulation/supplementary_large/ours_a2262-_DGW6400.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a2262-_DGW6400.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2262-_DGW6400', 'images/detail_manipulation/supplementary_large/can_a2262-_DGW6400.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a2262-_DGW6400.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4620-20090417_at_01h35m03__MG_1723>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4620-20090417_at_01h35m03__MG_1723', 'images/detail_manipulation/supplementary_large/in_a4620-20090417_at_01h35m03__MG_1723.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a4620-20090417_at_01h35m03__MG_1723.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4620-20090417_at_01h35m03__MG_1723', 'images/detail_manipulation/supplementary_large/gt_a4620-20090417_at_01h35m03__MG_1723.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a4620-20090417_at_01h35m03__MG_1723.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4620-20090417_at_01h35m03__MG_1723', 'images/detail_manipulation/supplementary_large/ours_a4620-20090417_at_01h35m03__MG_1723.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a4620-20090417_at_01h35m03__MG_1723.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4620-20090417_at_01h35m03__MG_1723', 'images/detail_manipulation/supplementary_large/can_a4620-20090417_at_01h35m03__MG_1723.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a4620-20090417_at_01h35m03__MG_1723.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a3437-IMG_0474>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3437-IMG_0474', 'images/detail_manipulation/supplementary_large/in_a3437-IMG_0474.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a3437-IMG_0474.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3437-IMG_0474', 'images/detail_manipulation/supplementary_large/gt_a3437-IMG_0474.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a3437-IMG_0474.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3437-IMG_0474', 'images/detail_manipulation/supplementary_large/ours_a3437-IMG_0474.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a3437-IMG_0474.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3437-IMG_0474', 'images/detail_manipulation/supplementary_large/can_a3437-IMG_0474.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a3437-IMG_0474.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a3150-IMG_4436>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3150-IMG_4436', 'images/detail_manipulation/supplementary_large/in_a3150-IMG_4436.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a3150-IMG_4436.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3150-IMG_4436', 'images/detail_manipulation/supplementary_large/gt_a3150-IMG_4436.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a3150-IMG_4436.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3150-IMG_4436', 'images/detail_manipulation/supplementary_large/ours_a3150-IMG_4436.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a3150-IMG_4436.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3150-IMG_4436', 'images/detail_manipulation/supplementary_large/can_a3150-IMG_4436.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a3150-IMG_4436.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1819-kme_034>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1819-kme_034', 'images/detail_manipulation/supplementary_large/in_a1819-kme_034.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a1819-kme_034.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1819-kme_034', 'images/detail_manipulation/supplementary_large/gt_a1819-kme_034.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a1819-kme_034.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1819-kme_034', 'images/detail_manipulation/supplementary_large/ours_a1819-kme_034.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a1819-kme_034.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1819-kme_034', 'images/detail_manipulation/supplementary_large/can_a1819-kme_034.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a1819-kme_034.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0855-_I2E6010>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0855-_I2E6010', 'images/detail_manipulation/supplementary_large/in_a0855-_I2E6010.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a0855-_I2E6010.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0855-_I2E6010', 'images/detail_manipulation/supplementary_large/gt_a0855-_I2E6010.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a0855-_I2E6010.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0855-_I2E6010', 'images/detail_manipulation/supplementary_large/ours_a0855-_I2E6010.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a0855-_I2E6010.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0855-_I2E6010', 'images/detail_manipulation/supplementary_large/can_a0855-_I2E6010.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a0855-_I2E6010.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2874-IMG_4365>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2874-IMG_4365', 'images/detail_manipulation/supplementary_large/in_a2874-IMG_4365.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a2874-IMG_4365.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2874-IMG_4365', 'images/detail_manipulation/supplementary_large/gt_a2874-IMG_4365.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a2874-IMG_4365.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2874-IMG_4365', 'images/detail_manipulation/supplementary_large/ours_a2874-IMG_4365.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a2874-IMG_4365.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2874-IMG_4365', 'images/detail_manipulation/supplementary_large/can_a2874-IMG_4365.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a2874-IMG_4365.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a4879-IMG_3712>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4879-IMG_3712', 'images/detail_manipulation/supplementary_large/in_a4879-IMG_3712.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a4879-IMG_3712.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4879-IMG_3712', 'images/detail_manipulation/supplementary_large/gt_a4879-IMG_3712.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a4879-IMG_3712.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4879-IMG_3712', 'images/detail_manipulation/supplementary_large/ours_a4879-IMG_3712.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a4879-IMG_3712.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a4879-IMG_3712', 'images/detail_manipulation/supplementary_large/can_a4879-IMG_3712.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a4879-IMG_3712.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a3210-IMG_4184>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3210-IMG_4184', 'images/detail_manipulation/supplementary_large/in_a3210-IMG_4184.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a3210-IMG_4184.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3210-IMG_4184', 'images/detail_manipulation/supplementary_large/gt_a3210-IMG_4184.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a3210-IMG_4184.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3210-IMG_4184', 'images/detail_manipulation/supplementary_large/ours_a3210-IMG_4184.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a3210-IMG_4184.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3210-IMG_4184', 'images/detail_manipulation/supplementary_large/can_a3210-IMG_4184.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a3210-IMG_4184.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2558-_I2E6138>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2558-_I2E6138', 'images/detail_manipulation/supplementary_large/in_a2558-_I2E6138.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a2558-_I2E6138.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2558-_I2E6138', 'images/detail_manipulation/supplementary_large/gt_a2558-_I2E6138.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a2558-_I2E6138.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2558-_I2E6138', 'images/detail_manipulation/supplementary_large/ours_a2558-_I2E6138.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a2558-_I2E6138.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2558-_I2E6138', 'images/detail_manipulation/supplementary_large/can_a2558-_I2E6138.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a2558-_I2E6138.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1344-IMG_4336>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1344-IMG_4336', 'images/detail_manipulation/supplementary_large/in_a1344-IMG_4336.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a1344-IMG_4336.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1344-IMG_4336', 'images/detail_manipulation/supplementary_large/gt_a1344-IMG_4336.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a1344-IMG_4336.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1344-IMG_4336', 'images/detail_manipulation/supplementary_large/ours_a1344-IMG_4336.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a1344-IMG_4336.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1344-IMG_4336', 'images/detail_manipulation/supplementary_large/can_a1344-IMG_4336.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a1344-IMG_4336.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2489-kme_408>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2489-kme_408', 'images/detail_manipulation/supplementary_large/in_a2489-kme_408.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a2489-kme_408.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2489-kme_408', 'images/detail_manipulation/supplementary_large/gt_a2489-kme_408.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a2489-kme_408.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2489-kme_408', 'images/detail_manipulation/supplementary_large/ours_a2489-kme_408.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a2489-kme_408.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2489-kme_408', 'images/detail_manipulation/supplementary_large/can_a2489-kme_408.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a2489-kme_408.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a0511-LS20050429d650013>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0511-LS20050429d650013', 'images/detail_manipulation/supplementary_large/in_a0511-LS20050429d650013.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a0511-LS20050429d650013.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0511-LS20050429d650013', 'images/detail_manipulation/supplementary_large/gt_a0511-LS20050429d650013.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a0511-LS20050429d650013.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0511-LS20050429d650013', 'images/detail_manipulation/supplementary_large/ours_a0511-LS20050429d650013.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a0511-LS20050429d650013.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a0511-LS20050429d650013', 'images/detail_manipulation/supplementary_large/can_a0511-LS20050429d650013.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a0511-LS20050429d650013.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a2167-20050602_183119__MG_2842>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2167-20050602_183119__MG_2842', 'images/detail_manipulation/supplementary_large/in_a2167-20050602_183119__MG_2842.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a2167-20050602_183119__MG_2842.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2167-20050602_183119__MG_2842', 'images/detail_manipulation/supplementary_large/gt_a2167-20050602_183119__MG_2842.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a2167-20050602_183119__MG_2842.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2167-20050602_183119__MG_2842', 'images/detail_manipulation/supplementary_large/ours_a2167-20050602_183119__MG_2842.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a2167-20050602_183119__MG_2842.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a2167-20050602_183119__MG_2842', 'images/detail_manipulation/supplementary_large/can_a2167-20050602_183119__MG_2842.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a2167-20050602_183119__MG_2842.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1029-jn_2007_05_11__724>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1029-jn_2007_05_11__724', 'images/detail_manipulation/supplementary_large/in_a1029-jn_2007_05_11__724.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a1029-jn_2007_05_11__724.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1029-jn_2007_05_11__724', 'images/detail_manipulation/supplementary_large/gt_a1029-jn_2007_05_11__724.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a1029-jn_2007_05_11__724.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1029-jn_2007_05_11__724', 'images/detail_manipulation/supplementary_large/ours_a1029-jn_2007_05_11__724.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a1029-jn_2007_05_11__724.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1029-jn_2007_05_11__724', 'images/detail_manipulation/supplementary_large/can_a1029-jn_2007_05_11__724.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a1029-jn_2007_05_11__724.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a3322-_DGW6269>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3322-_DGW6269', 'images/detail_manipulation/supplementary_large/in_a3322-_DGW6269.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a3322-_DGW6269.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3322-_DGW6269', 'images/detail_manipulation/supplementary_large/gt_a3322-_DGW6269.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a3322-_DGW6269.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3322-_DGW6269', 'images/detail_manipulation/supplementary_large/ours_a3322-_DGW6269.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a3322-_DGW6269.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a3322-_DGW6269', 'images/detail_manipulation/supplementary_large/can_a3322-_DGW6269.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a3322-_DGW6269.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=a1043-_MG_0366>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1043-_MG_0366', 'images/detail_manipulation/supplementary_large/in_a1043-_MG_0366.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/in_a1043-_MG_0366.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1043-_MG_0366', 'images/detail_manipulation/supplementary_large/gt_a1043-_MG_0366.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/gt_a1043-_MG_0366.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1043-_MG_0366', 'images/detail_manipulation/supplementary_large/ours_a1043-_MG_0366.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/ours_a1043-_MG_0366.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#a1043-_MG_0366', 'images/detail_manipulation/supplementary_large/can_a1043-_MG_0366.jpg')" href="#enlarge">
+       <img src="images/detail_manipulation/supplementary/can_a1043-_MG_0366.jpeg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+      </div>
+    </div> <!-- #tab-content3 -->
+    <div id="tab-content6" class="tab-content">
+      <div class="container sec">
+
+  <h1>Visual Results --- Mono Depth Estimation (Click to Enlarge)</h1>
+  <div class='row'>
+    <div class="col-md-3 nopadding">
+      <h3>Input</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>GroundTruth</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>Ours</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>Baseline</h3>
+    </div>
+  </div>
+
+<div class='row' id=000060_10>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000060_10', 'images/depth/supplementary_large/000060_10_input.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000060_10_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000060_10', 'images/depth/supplementary_large/000060_10_gt.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000060_10_gt.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000060_10', 'images/depth/supplementary_large/000060_10_ours.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000060_10_ours.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000060_10', 'images/depth/supplementary_large/000060_10_baseline.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000060_10_baseline.jpg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=.DS>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#.DS', 'images/depth/supplementary_large/.DS_input.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/.DS_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#.DS', 'images/depth/supplementary_large/.DS_gt.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/.DS_gt.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#.DS', 'images/depth/supplementary_large/.DS_ours.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/.DS_ours.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#.DS', 'images/depth/supplementary_large/.DS_baseline.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/.DS_baseline.jpg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=000046_10>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000046_10', 'images/depth/supplementary_large/000046_10_input.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000046_10_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000046_10', 'images/depth/supplementary_large/000046_10_gt.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000046_10_gt.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000046_10', 'images/depth/supplementary_large/000046_10_ours.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000046_10_ours.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000046_10', 'images/depth/supplementary_large/000046_10_baseline.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000046_10_baseline.jpg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=000139_10>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000139_10', 'images/depth/supplementary_large/000139_10_input.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000139_10_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000139_10', 'images/depth/supplementary_large/000139_10_gt.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000139_10_gt.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000139_10', 'images/depth/supplementary_large/000139_10_ours.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000139_10_ours.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000139_10', 'images/depth/supplementary_large/000139_10_baseline.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000139_10_baseline.jpg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=000129_10>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000129_10', 'images/depth/supplementary_large/000129_10_input.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000129_10_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000129_10', 'images/depth/supplementary_large/000129_10_gt.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000129_10_gt.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000129_10', 'images/depth/supplementary_large/000129_10_ours.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000129_10_ours.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000129_10', 'images/depth/supplementary_large/000129_10_baseline.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000129_10_baseline.jpg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=000086_10>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000086_10', 'images/depth/supplementary_large/000086_10_input.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000086_10_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000086_10', 'images/depth/supplementary_large/000086_10_gt.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000086_10_gt.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000086_10', 'images/depth/supplementary_large/000086_10_ours.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000086_10_ours.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000086_10', 'images/depth/supplementary_large/000086_10_baseline.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000086_10_baseline.jpg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=000054_10>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000054_10', 'images/depth/supplementary_large/000054_10_input.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000054_10_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000054_10', 'images/depth/supplementary_large/000054_10_gt.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000054_10_gt.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000054_10', 'images/depth/supplementary_large/000054_10_ours.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000054_10_ours.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000054_10', 'images/depth/supplementary_large/000054_10_baseline.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000054_10_baseline.jpg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=000133_10>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000133_10', 'images/depth/supplementary_large/000133_10_input.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000133_10_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000133_10', 'images/depth/supplementary_large/000133_10_gt.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000133_10_gt.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000133_10', 'images/depth/supplementary_large/000133_10_ours.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000133_10_ours.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#000133_10', 'images/depth/supplementary_large/000133_10_baseline.jpg')" href="#enlarge">
+       <img src="images/depth/supplementary/000133_10_baseline.jpg" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+</div>
+    </div> <!-- #tab-content3 -->
+    <div id="tab-content7" class="tab-content">
+<div class="container sec">
+
+  <h1>Visual Results --- Semantic Segmentation (Click to Enlarge)</h1>
+  <div class='row'>
+    <div class="col-md-3 nopadding">
+      <h3>Input</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>GroundTruth</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>Ours</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>Baseline</h3>
+    </div>
+  </div>
+
+<div class='row' id=2010_005508>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_005508', 'images/segmentation/supplementary_large/2010_005508_input.jpg')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_005508_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_005508', 'images/segmentation/supplementary_large/2010_005508_gt.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_005508_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_005508', 'images/segmentation/supplementary_large/2010_005508_ours.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_005508_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_005508', 'images/segmentation/supplementary_large/2010_005508_baseline.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_005508_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=2008_007945>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2008_007945', 'images/segmentation/supplementary_large/2008_007945_input.jpg')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2008_007945_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2008_007945', 'images/segmentation/supplementary_large/2008_007945_gt.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2008_007945_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2008_007945', 'images/segmentation/supplementary_large/2008_007945_ours.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2008_007945_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2008_007945', 'images/segmentation/supplementary_large/2008_007945_baseline.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2008_007945_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=2010_005719>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_005719', 'images/segmentation/supplementary_large/2010_005719_input.jpg')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_005719_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_005719', 'images/segmentation/supplementary_large/2010_005719_gt.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_005719_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_005719', 'images/segmentation/supplementary_large/2010_005719_ours.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_005719_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_005719', 'images/segmentation/supplementary_large/2010_005719_baseline.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_005719_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=2007_006364>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2007_006364', 'images/segmentation/supplementary_large/2007_006364_input.jpg')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2007_006364_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2007_006364', 'images/segmentation/supplementary_large/2007_006364_gt.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2007_006364_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2007_006364', 'images/segmentation/supplementary_large/2007_006364_ours.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2007_006364_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2007_006364', 'images/segmentation/supplementary_large/2007_006364_baseline.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2007_006364_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=.DS>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#.DS', 'images/segmentation/supplementary_large/.DS_input.jpg')" href="#enlarge">
+       <img src="images/segmentation/supplementary/.DS_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#.DS', 'images/segmentation/supplementary_large/.DS_gt.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/.DS_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#.DS', 'images/segmentation/supplementary_large/.DS_ours.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/.DS_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#.DS', 'images/segmentation/supplementary_large/.DS_baseline.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/.DS_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=2009_004298>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2009_004298', 'images/segmentation/supplementary_large/2009_004298_input.jpg')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2009_004298_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2009_004298', 'images/segmentation/supplementary_large/2009_004298_gt.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2009_004298_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2009_004298', 'images/segmentation/supplementary_large/2009_004298_ours.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2009_004298_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2009_004298', 'images/segmentation/supplementary_large/2009_004298_baseline.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2009_004298_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=2010_000683>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_000683', 'images/segmentation/supplementary_large/2010_000683_input.jpg')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_000683_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_000683', 'images/segmentation/supplementary_large/2010_000683_gt.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_000683_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_000683', 'images/segmentation/supplementary_large/2010_000683_ours.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_000683_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2010_000683', 'images/segmentation/supplementary_large/2010_000683_baseline.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2010_000683_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=2009_004993>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2009_004993', 'images/segmentation/supplementary_large/2009_004993_input.jpg')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2009_004993_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2009_004993', 'images/segmentation/supplementary_large/2009_004993_gt.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2009_004993_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2009_004993', 'images/segmentation/supplementary_large/2009_004993_ours.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2009_004993_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#2009_004993', 'images/segmentation/supplementary_large/2009_004993_baseline.png')" href="#enlarge">
+       <img src="images/segmentation/supplementary/2009_004993_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+</div>
+    </div> <!-- #tab-content3 -->
+    <div id="tab-content8" class="tab-content">
+      <div class="container sec">
+
+  <h1>Visual Results --- Saliency Detection (Click to Enlarge)</h1>
+  <div class='row'>
+    <div class="col-md-3 nopadding">
+      <h3>Input</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>GroundTruth</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>Ours</h3>
+    </div>
+    <div class="col-md-3 nopadding">
+      <h3>Baseline</h3>
+    </div>
+  </div>
+
+<div class='row' id=1367>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1367', 'images/saliency/supplementary_large/1367_input.jpg')" href="#enlarge">
+       <img src="images/saliency/supplementary/1367_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1367', 'images/saliency/supplementary_large/1367_gt.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1367_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1367', 'images/saliency/supplementary_large/1367_ours.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1367_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1367', 'images/saliency/supplementary_large/1367_baseline.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1367_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=41>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#41', 'images/saliency/supplementary_large/41_input.jpg')" href="#enlarge">
+       <img src="images/saliency/supplementary/41_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#41', 'images/saliency/supplementary_large/41_gt.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/41_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#41', 'images/saliency/supplementary_large/41_ours.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/41_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#41', 'images/saliency/supplementary_large/41_baseline.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/41_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=141>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#141', 'images/saliency/supplementary_large/141_input.jpg')" href="#enlarge">
+       <img src="images/saliency/supplementary/141_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#141', 'images/saliency/supplementary_large/141_gt.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/141_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#141', 'images/saliency/supplementary_large/141_ours.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/141_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#141', 'images/saliency/supplementary_large/141_baseline.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/141_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=1272>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1272', 'images/saliency/supplementary_large/1272_input.jpg')" href="#enlarge">
+       <img src="images/saliency/supplementary/1272_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1272', 'images/saliency/supplementary_large/1272_gt.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1272_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1272', 'images/saliency/supplementary_large/1272_ours.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1272_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1272', 'images/saliency/supplementary_large/1272_baseline.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1272_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=1586>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1586', 'images/saliency/supplementary_large/1586_input.jpg')" href="#enlarge">
+       <img src="images/saliency/supplementary/1586_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1586', 'images/saliency/supplementary_large/1586_gt.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1586_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1586', 'images/saliency/supplementary_large/1586_ours.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1586_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1586', 'images/saliency/supplementary_large/1586_baseline.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1586_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=958>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#958', 'images/saliency/supplementary_large/958_input.jpg')" href="#enlarge">
+       <img src="images/saliency/supplementary/958_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#958', 'images/saliency/supplementary_large/958_gt.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/958_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#958', 'images/saliency/supplementary_large/958_ours.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/958_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#958', 'images/saliency/supplementary_large/958_baseline.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/958_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+<div class='row' id=1658>
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1658', 'images/saliency/supplementary_large/1658_input.jpg')" href="#enlarge">
+       <img src="images/saliency/supplementary/1658_input.jpg" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1658', 'images/saliency/supplementary_large/1658_gt.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1658_gt.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1658', 'images/saliency/supplementary_large/1658_ours.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1658_ours.png" class="img-responsive"/>
+      </a>
+    </div>
+
+
+    <div class="col-md-3 nopadding">
+      <a onclick="enlarge('#1658', 'images/saliency/supplementary_large/1658_baseline.png')" href="#enlarge">
+       <img src="images/saliency/supplementary/1658_baseline.png" class="img-responsive"/>
+      </a>
+    </div>
+</div>
+</div>
+    </div> <!-- #tab-content3 -->
+</div>
+<!--###############################################################-->
+
+<div class="lightbox-target" id="enlarge">
+  <img src="" id="enlarge_im"/>
+  <a class="lightbox-close" href='#' id="enlarge_href"></a>
+</div>
+</body></html>
