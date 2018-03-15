@@ -396,6 +396,8 @@ top: 0px;
     border-bottom: 4px solid #3498db;
     color: #3498db;
 }
+#tab00:checked ~ #tab-content00,
+#tab0:checked ~ #tab-content0,
 #tab1:checked ~ #tab-content1,
 #tab2:checked ~ #tab-content2,
 #tab3:checked ~ #tab-content3,

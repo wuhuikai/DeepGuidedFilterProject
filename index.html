@@ -28,6 +28,20 @@
         <img src="http://www.nlpr.ia.ac.cn/nlpren/images/banner.jpg" style="height:75px; float: center; margin-left: 7%;">
     </a>
   </div>
+
+  <div align="middle">
+      <h3>
+        <a href="https://github.com/wuhuikai/DeepGuidedFilter">[GitHub]</a>
+        <a href="deep_guided_filter.pdf">[Paper]</a>
+        <a href="#demo">[<img src="images/fire.png"/><b>Demo</b>]</a>
+        <a href="#visual">[Visual Results]</a>
+        <a href="http://wuhuikai.me">[Home Page]</a>
+      </h3>
+      <h4>
+        <a href="supplementary_material.pdf">[High-Resolution Supplementary Material with Visual Results]</a>
+      </h4>
+  </div>
+
   <div style="clear:both;"></div>
 </div>
 
@@ -43,7 +57,9 @@
 <div class="container sec">
 
 <div class='row'>
-  <img src='images/paper.jpg' class='img-responsive center-block'>
+    <a href="deep_guided_filter.pdf">
+        <img src='images/results.jpg' class='img-responsive center-block'>
+    </a>
 </div>
 <div class='row text-center' style='color:#900'>
   Accepted by CVPR 2018
@@ -80,13 +96,31 @@
 </div>
 </div>
 
-<div id="demo">
-    <script src="https://codeocean.com/widget.js?id=520acd1c-6956-4d69-8242-6081f2caccae&interface=true" async></script>
-</div>
 <!--######################## AUTO #################################-->
-<div class="tabs">
+<div class="tabs" id="demo">
+    <h1>DEMO</h1>
+
+    <input type="radio" name="tabs" id="tab0">
+    <label for="tab0" style="width: 50%">
+        <i class="fa fa-html5"></i><span><b>OPEN</b> DEMO</span>
+    </label>
+    <input type="radio" name="tabs" id="tab00">
+    <label for="tab00" style="width: 50%">
+        <i class="fa fa-html5"></i><span><b>CLOSE</b> DEMO</span>
+    </label>
+    <div id="tab-content0" class="tab-content">
+        <div>
+            <h1>Coming Soon!</h1>
+        </div>
+    </div>
+    <div id="tab-content00" class="tab-content">
+    </div>
+</div>
+
+<div class="tabs" id="visual">
+    <h1>VISUAL RESULTS</h1>
     <!-- Radio button and lable for #tab-content1 -->
-    <input type="radio" name="tabs" id="tab1" checked >
+    <input type="radio" name="tabs" id="tab1">
     <label for="tab1">
         <i class="fa fa-html5"></i><span>Image Retoucing</span>
     </label>
@@ -108,23 +142,17 @@
     <label for="tab5">
         <i class="fa fa-code"></i><span>Detail Manipulation</span>
     </label>
-    <input type="radio" name="tabs" id="tab_space_pre">
-    <label for="tab6">
-    </label>
     <input type="radio" name="tabs" id="tab6">
-    <label for="tab6">
+    <label for="tab6" style="width: 33.33333%">
         <i class="fa fa-code"></i><span>Mono Depth Estimation</span>
     </label>
     <input type="radio" name="tabs" id="tab7">
-    <label for="tab7">
+    <label for="tab7" style="width: 33.33333%">
         <i class="fa fa-code"></i><span>Semantic Segmentation</span>
     </label>
     <input type="radio" name="tabs" id="tab8">
-    <label for="tab8">
+    <label for="tab8" style="width: 33.33333%">
         <i class="fa fa-code"></i><span>Saliency Detection</span>
-    </label>
-    <input type="radio" name="tabs" id="tab_space_after">
-    <label for="tab6">
     </label>
     <div id="tab-content1" class="tab-content">
         <div class="container sec">
@@ -3263,6 +3291,9 @@
 </div>
     </div> <!-- #tab-content3 -->
 </div>
+
+
+
 <!--###############################################################-->
 
 <div class="lightbox-target" id="enlarge">
