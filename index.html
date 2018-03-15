@@ -21,14 +21,13 @@
 <body onload="page_loaded()">
 
 <div id="header">
-  <a href="http://cripac.ia.ac.cn/en/EN/volumn/home.shtml">
-    <img src="images/CRIPAC.png" style="height:50px; float: left; margin-left: 20px;">
-  </a>
-  <a href="http://labs.ebay.com/">
-    <img src="images/ebay.png" style="height:50px; float: right; margin-right: 20px;">
-  </a>
   <h1>Fast End-to-End Trainable Guided Filter</h1>
   <h4>Huikai Wu, Shuai Zheng, Junge Zhang, Kaiqi Huang</h4>
+  <div align="middle">
+    <a href="http://www.nlpr.ia.ac.cn/nlpren/EN/volumn/home.shtml">
+        <img src="http://www.nlpr.ia.ac.cn/nlpren/images/banner.jpg" style="height:75px; float: center; margin-left: 7%;">
+    </a>
+  </div>
   <div style="clear:both;"></div>
 </div>
 
@@ -81,8 +80,9 @@
 </div>
 </div>
 
-<script src="https://codeocean.com/widget.js?id=520acd1c-6956-4d69-8242-6081f2caccae&interface=true" async></script>
-
+<div id="demo">
+    <script src="https://codeocean.com/widget.js?id=520acd1c-6956-4d69-8242-6081f2caccae&interface=true" async></script>
+</div>
 <!--######################## AUTO #################################-->
 <div class="tabs">
     <!-- Radio button and lable for #tab-content1 -->
@@ -108,6 +108,9 @@
     <label for="tab5">
         <i class="fa fa-code"></i><span>Detail Manipulation</span>
     </label>
+    <input type="radio" name="tabs" id="tab_space_pre">
+    <label for="tab6">
+    </label>
     <input type="radio" name="tabs" id="tab6">
     <label for="tab6">
         <i class="fa fa-code"></i><span>Mono Depth Estimation</span>
@@ -119,6 +122,9 @@
     <input type="radio" name="tabs" id="tab8">
     <label for="tab8">
         <i class="fa fa-code"></i><span>Saliency Detection</span>
+    </label>
+    <input type="radio" name="tabs" id="tab_space_after">
+    <label for="tab6">
     </label>
     <div id="tab-content1" class="tab-content">
         <div class="container sec">
@@ -3263,4 +3269,11 @@
   <img src="" id="enlarge_im"/>
   <a class="lightbox-close" href='#' id="enlarge_href"></a>
 </div>
+
+<div class="sechighlight">
+<div id="footer">
+This work is funded by the National Key Research and Development Program of China (Grant 2016YFB1001004 and Grant 2016YFB1001005), the National Natural Science Foundation of China (Grant 61673375, Grant 61721004 and Grant 61403383) and the Projects of Chinese Academy of Sciences (Grant QYZDB-SSW-JSC006 and Grant 173211KYS-B20160008). The authors would like to thank Patrick P{\'e}rez and Philip Torr for their helpful suggestions.
+</div>
+</div>
+
 </body></html>
