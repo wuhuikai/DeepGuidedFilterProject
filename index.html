@@ -39,7 +39,7 @@
         <a href="http://wuhuikai.me">[Home Page]</a>
       </h3>
       <h4>
-        <a href="supplementary_material.pdf">[High-Resolution Supplementary Material with Visual Results]</a>
+        <a href="supplementary_material.pdf">[High-Resolution Supplementary Material]</a>
       </h4>
   </div>
 
@@ -49,7 +49,7 @@
 <div class="sechighlight">
 <div class="container sec">
   <h2>Abstract</h2>
-  Image processing and pixel-wise dense prediction have been advanced by harnessing the capabilities of deep learning. One central issue of deep learning is the limited capacity to handle joint upsampling. We present a deep learning building block for joint upsampling, namely guided filtering layer. This layer aims at efficiently generating the high-resolution output given the corresponding low-resolution one and a high-resolution guidance map. The proposed layer is composed of a guided filter, which is reformulated as a fully differentiable block. To this end, we show that a guided filter can be expressed as a group of spatial varying linear transformation matrices. This layer could be integrated with the convolutional neural networks (CNNs) and jointly optimized through end-to-end training. To further take advantage of end-to-end training, we plug in a trainable transformation function that generates task-specific guidance maps. By integrating the CNNs and the proposed layer, we form deep guided filtering networks. The proposed networks are evaluated on five advanced image processing tasks. Experiments on MIT-Adobe FiveK Dataset demonstrate that the proposed approach runs <b>10-100</b> times faster and achieves the state-of-the-art performance. We also show that the proposed guided filtering layer helps to improve the performance of multiple pixel-wise dense prediction tasks.
+  Dense pixel-wise image prediction has been advanced by harnessing the capabilities of Fully Convolutional Networks (FCNs). One central issue of FCNs is the limited capacity to handle joint upsampling. To address the problem, we present a novel building block for FCNs, namely guided filtering layer, which is designed for efficiently generating a high-resolution output given the corresponding low-resolution one and a high-resolution guidance map. Such a layer contains learnable parameters, which can be integrated with FCNs and jointly optimized through end-to-end training. To further take advantage of end-to-end training, we plug in a trainable transformation function for generating the task-specific guidance map. Based on the proposed layer, we present a general framework for pixel-wise image prediction, named deep guided filtering network (DGF). The proposed network is evaluated on five image processing tasks. Experiments on MIT-Adobe FiveK Dataset demonstrate that DGF runs <b>10-100</b> times faster and achieves the state-of-the-art performance. We also show that DGF helps to improve the performance of multiple computer vision tasks.
   <div id="coursedesc">
   </div>
 </div>
@@ -99,26 +99,7 @@
 
 <!--######################## AUTO #################################-->
 <div class="tabs" id="demo">
-    <h1>DEMO</h1>
-
-    <input type="radio" name="tabs" id="tab0">
-    <label for="tab0" style="width: 50%">
-        <i class="fa fa-html5"></i><span><b>OPEN</b> DEMO</span>
-    </label>
-    <input type="radio" name="tabs" id="tab00">
-    <label for="tab00" style="width: 50%">
-        <i class="fa fa-html5"></i><span><b>CLOSE</b> DEMO</span>
-    </label>
-    <div id="tab-content0" class="tab-content">
-        <div>
-            <div align="middle">
-                <h3>It should finish within 15s. If not, delete and run it again!</h3>
-            </div>
-            <script src="https://codeocean.com/widget.js?id=129c8bff-3093-41dc-8dbb-a92c0bfc325c&interface=true" async></script>
-        </div>
-    </div>
-    <div id="tab-content00" class="tab-content">
-    </div>
+    <h1>DEMO <a href="http://wuhuikai.me/DeepJS/">[DeepJS]</a> <a href="https://codeocean.com/capsule/7997241/">[CodeOcean]</a></h1>
 </div>
 
 <div class="tabs" id="visual">
